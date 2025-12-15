@@ -1,4 +1,5 @@
-mkdir -p argocd && cat > argocd/hello-world-staging-minikube.yaml << 'EOF'
+mkdir -p argocd
+cat > argocd/hello-world-staging-minikube.yaml << EOF
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 meta
@@ -12,12 +13,12 @@ spec:
     path: .
     helm:
       valueFiles:
-      - values-staging.yaml
+        - values-staging.yaml
       parameters:
-      - name: image.repository
-        value: jj1729/hello-world-flask
-      - name: image.tag
-        value: latest
+        - name: image.repository
+          value: jj1729/hello-world-flask
+        - name: image.tag
+          value: latest
   destination:
     server: https://kubernetes.default.svc
     namespace: hello-staging
@@ -26,5 +27,5 @@ spec:
       prune: true
       selfHeal: true
     syncOptions:
-    - CreateNamespace=true
+      - CreateNamespace=true
 EOF
