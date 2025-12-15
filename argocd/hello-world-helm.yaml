@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+meta
+  name: hello-world-staging
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/JJ8817/Jamf-project.git
+    targetRevision: HEAD
+    path: helm
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: hello-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
