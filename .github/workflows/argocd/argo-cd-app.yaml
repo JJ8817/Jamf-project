@@ -1,0 +1,57 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+meta
+  name: hello-world-staging
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/JJ8817/Jamf-project.git
+    targetRevision: HEAD
+    path: .
+    helm:
+      valueFiles:
+        - values-staging.yaml
+      parameters:
+        - name: image.repository
+          value: jj1729/hello-world-flask
+        - name: image.tag
+          value: "{{ .Values.image.tag | default (github.sha) }}"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: hello-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+meta
+  name: hello-world-production
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/JJ8817/Jamf-project.git
+    targetRevision: HEAD
+    path: .
+    helm:
+      valueFiles:
+        - values-prod.yaml
+      parameters:
+        - name: image.repository
+          value: jj1729/hello-world-flask
+        - name: image.tag
+          value: prod
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: hello-production
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
