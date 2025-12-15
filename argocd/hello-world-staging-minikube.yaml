@@ -1,3 +1,5 @@
+mkdir -p argocd
+cat > argocd/hello-world-staging-minikube.yaml << 'EOF'
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 meta
@@ -6,7 +8,7 @@ meta
 spec:
   project: default
   source:
-    repoURL: https://github.com/JJ8817/Jamf-project.git
+    repoURL: 'https://github.com/JJ8817/Jamf-project.git'
     targetRevision: HEAD
     path: .
     helm:
@@ -18,7 +20,7 @@ spec:
         - name: image.tag
           value: latest
   destination:
-    server: https://kubernetes.default.svc
+    server: 'https://kubernetes.default.svc'
     namespace: hello-staging
   syncPolicy:
     automated:
@@ -26,3 +28,4 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+EOF
