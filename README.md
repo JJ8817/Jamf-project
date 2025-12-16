@@ -117,9 +117,6 @@ Access the UI at **https://localhost:8080**
 # Apply the ArgoCD Application manifest
 kubectl apply -f hello-world-staging.yaml
 
-# Or use the corrected version pointing to helm/hello-world
-kubectl apply -f argocd/hello-world-staging-minikube.yaml
-
 # Check application status
 argocd app list
 argocd app get hello-world-staging
