@@ -1,5 +1,3 @@
-mkdir -p argocd
-cat > argocd/hello-world-staging-minikube.yaml << EOF
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 meta
@@ -28,4 +26,3 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-EOF
