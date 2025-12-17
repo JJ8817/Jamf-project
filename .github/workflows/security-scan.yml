@@ -15,16 +15,14 @@ on:
         options:
           - staging
           - production
+
 permissions:
   contents: read
   packages: write
   security-events: write
 
-- name: Set image name
-  id: img
-  run: echo "image_name=ghcr.io/$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')/hello-world-flask" >> $GITHUB_OUTPUT
 env:
-  IMAGE_NAME: ${{ steps.img.outputs.image_name }}
+  IMAGE_NAME: ghcr.io/jj8817/hello-world-flask
   REGISTRY: ghcr.io
 
 jobs:
@@ -44,7 +42,8 @@ jobs:
           severity: 'CRITICAL,HIGH'
       
       - name: Upload SARIF to GitHub Code Scanning
-        uses: github/codeql-action/upload-sarif@v3
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: 'trivy-fs.sarif'
 
@@ -84,7 +83,8 @@ jobs:
           severity: 'CRITICAL,HIGH'
       
       - name: Upload container SARIF
-        uses: github/codeql-action/upload-sarif@v3
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: 'trivy-container.sarif'
 
@@ -116,103 +116,4 @@ jobs:
       
       - name: Set up kubectl
         uses: azure/setup-kubectl@v4
-        with:
-          version: 'v1.30.0'
-      
-      - name: Install Helm
-        uses: azure/setup-helm@v4
-        with:
-          version: 'v3.15.0'
-      
-      - name: Select environment
-        id: envselect
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            ENV="${{ github.event.inputs.environment }}"
-          else
-            ENV="staging"
-          fi
-          echo "env=$ENV" >> $GITHUB_OUTPUT
-      
-      - name: Configure deployment
-        id: cfg
-        run: |
-          if [ "${{ steps.envselect.outputs.env }}" = "production" ]; then
-            NS="hello-production"
-            VALUES="helm/hello-world/values-production.yaml"
-            TAG="latest"
-          else
-            NS="hello-staging"
-            VALUES="helm/hello-world/values-staging.yaml"
-            TAG="${{ github.sha }}"
-          fi
-          echo "namespace=$NS" >> $GITHUB_OUTPUT
-          echo "values=$VALUES" >> $GITHUB_OUTPUT
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
-      
-      - name: Create namespace
-        run: |
-          kubectl create namespace ${{ steps.cfg.outputs.namespace }} --dry-run=client -o yaml | kubectl apply -f -
-      
-      - name: Load image to kind
-        run: |
-          kind load docker-image ${{ env.IMAGE_NAME }}:${{ steps.cfg.outputs.tag }} --name hw-ci-cd
-      
-      - name: Deploy with Helm to Kind
-        run: |
-          helm upgrade --install hello-world \
-            helm/hello-world \
-            --namespace ${{ steps.cfg.outputs.namespace }} \
-            -f ${{ steps.cfg.outputs.values }} \
-            --set image.repository=${{ env.IMAGE_NAME }} \
-            --set image.tag=${{ steps.cfg.outputs.tag }}
-      
-      - name: Test deployment
-        run: |
-          kubectl wait --namespace ${{ steps.cfg.outputs.namespace }} \
-            --for=condition=available deployment/hello-world --timeout=300s
-          kubectl get pods -n ${{ steps.cfg.outputs.namespace }} -l app.kubernetes.io/name=hello-world
-      
-      - name: Port forward and test
-        run: |
-          kubectl port-forward -n ${{ steps.cfg.outputs.namespace }} deployment/hello-world 8080:5000 &
-          sleep 10
-          curl -f http://localhost:8080 || exit 1
-          echo "✅ App is healthy in ${{ steps.cfg.outputs.namespace }}"
-
-  update-argocd-manifests:
-    needs: deploy-kind-test
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-      
-      - name: Update ArgoCD manifests
-        run: |
-          TAG="${{ github.sha }}"
-          
-          # Update staging ArgoCD app with SHA tag
-          if [ -f "argocd/hello-world-staging.yaml" ]; then
-            yq e ".spec.source.helm.parameters[0].value = \"$TAG\"" -i argocd/hello-world-staging.yaml
-          fi
-          
-          # Update production with latest
-          if [ -f "argocd/hello-world-production.yaml" ]; then
-            yq e ".spec.source.helm.parameters[0].value = \"latest\"" -i argocd/hello-world-production.yaml
-          fi
-      
-      - name: Commit ArgoCD changes
-        run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-          git add argocd/*.yaml
-          if git diff --staged --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "chore: update image tags for ArgoCD [skip ci]"
-            git push
-            echo "✅ Updated ArgoCD manifests - ready for GitOps sync"
-          fi
+        with
