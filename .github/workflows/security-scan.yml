@@ -20,8 +20,11 @@ permissions:
   packages: write
   security-events: write
 
+- name: Set image name
+  id: img
+  run: echo "image_name=ghcr.io/$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')/hello-world-flask" >> $GITHUB_OUTPUT
 env:
-  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/hello-world-flask
+  IMAGE_NAME: ${{ steps.img.outputs.image_name }}
   REGISTRY: ghcr.io
 
 jobs:
