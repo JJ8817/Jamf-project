@@ -140,12 +140,11 @@ jobs:
           if [ "${{ steps.envselect.outputs.env }}" = "production" ]; then
             NS="hello-production"
             VALUES="helm/hello-world/values-production.yaml"
-            TAG="latest"
           else
             NS="hello-staging"
             VALUES="helm/hello-world/values-staging.yaml"
-            TAG="${{ github.sha }}"
           fi
+          TAG="latest"
           echo "namespace=$NS" >> $GITHUB_OUTPUT
           echo "values=$VALUES" >> $GITHUB_OUTPUT
           echo "tag=$TAG" >> $GITHUB_OUTPUT
