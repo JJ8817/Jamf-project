@@ -99,6 +99,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       
+  deploy-kind-test:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Create kind cluster
         uses: helm/kind-action@v1
         with:
@@ -108,16 +115,16 @@ jobs:
             kind: Cluster
             apiVersion: kind.x-k8s.io/v1alpha4
             nodes:
-            - role: control-plane
-              kubeadmConfigPatches:
-              - |
-                kind: InitConfiguration
-                nodeRegistration:
-                  kubeletExtraArgs:
-                    node-labels: "ingress-ready=true"
-            - role: worker
-            - role: worker
-      
+              - role: control-plane
+                kubeadmConfigPatches:
+                  - |
+                    kind: InitConfiguration
+                    nodeRegistration:
+                      kubeletExtraArgs:
+                        node-labels: "ingress-ready=true"
+              - role: worker
+              - role: worker
+
       - name: Set up kubectl
         uses: azure/setup-kubectl@v4
         with:
