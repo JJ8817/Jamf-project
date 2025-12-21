@@ -21,7 +21,8 @@ jobs:
       - name: Create kind cluster
         uses: helm/kind-action@v1
         with:
-          cluster_name: HW-CI-CD
+          cluster_name: hello-cluster
+          wait_for_ready: true
           
       - name: Checkout
         uses: actions/checkout@v4
