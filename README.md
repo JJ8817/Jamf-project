@@ -247,7 +247,7 @@ a) **Repository Access Issues**
 argocd repo list
 
 # For private repos, add credentials
-argocd repo add https://github.com/JJ8817/Jamf-project.git --username <user> --password <token>
+argocd repo add https://github.com/JJ8817/Hello-world-argo-app.git --username <user> --password <token>
 ```
 
 b) **Helm Values File Not Found**
@@ -342,7 +342,7 @@ argocd app get hello-world-staging --refresh
 argocd app get hello-world-staging --hard-refresh
 
 # Check repository connection
-argocd repo get https://github.com/JJ8817/Jamf-project.git
+argocd repo get https://github.com/JJ8817/Hello-world-argo-app.git
 ```
 
 ## GitOps Workflow
@@ -438,4 +438,4 @@ minikube delete
 
 ## Repository
 
-GitHub: [https://github.com/JJ8817/Jamf-project](https://github.com/JJ8817/Jamf-project)
+GitHub: [https://github.com/JJ8817/Hello-world-argo-app](https://github.com/JJ8817/Hello-world-argo-app)
