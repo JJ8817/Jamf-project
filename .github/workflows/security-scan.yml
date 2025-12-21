@@ -68,15 +68,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # ❌ REMOVE these (they cause manifest unknown and kind errors)
-      # - name: Pull Docker image
-      #   run: |
-      #     docker pull ghcr.io/jj8817/hello-world-flask:${{ github.sha }}
-      #
-      # - name: Load image to kind
-      #   run: |
-      #     kind load docker-image ghcr.io/jj8817/hello-world-flask:${{ github.sha }} --name hw-ci-cd 
-
       - name: Build and push image
         uses: docker/build-push-action@v6
         with:
@@ -154,6 +145,10 @@ jobs:
         run: |
           kubectl create namespace ${{ steps.cfg.outputs.namespace }} --dry-run=client -o yaml | kubectl apply -f -
       
+      - name: Pull image from GHCR
+        run: |
+          docker pull ${{ env.IMAGE_NAME }}:${{ steps.cfg.outputs.tag }}
+
       - name: Load image to kind
         run: |
           kind load docker-image ${{ env.IMAGE_NAME }}:${{ steps.cfg.outputs.tag }} --name hw-ci-cd
