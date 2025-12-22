@@ -11,12 +11,12 @@ spec:
     path: helm/hello-world
     helm:
       valueFiles:
-      - values-staging.yaml
+        - values-staging.yaml
       parameters:
-      - name: image.tag
-        value: latest
-      - name: image.repository
-        value: ghcr.io/jj8817/hello-world-flask
+        - name: image.tag
+          value: e91b36555af8b55f77c47cc27c92f1ecb9ebce95
+        - name: image.repository
+          value: ghcr.io/jj8817/hello-world-flask
   destination:
     server: https://kubernetes.default.svc
     namespace: hello-staging
@@ -25,4 +25,4 @@ spec:
       prune: true
       selfHeal: true
     syncOptions:
-    - CreateNamespace=true
+      - CreateNamespace=true
