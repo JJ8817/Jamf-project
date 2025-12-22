@@ -14,7 +14,7 @@ spec:
         - values-staging.yaml
       parameters:
         - name: image.repository
-          value: 97d8aecb895e00b0eb40f0100362d98556094528
+          value: 493c2ba2145d8b839d566271b5a9f821cd55bd02
         - name: image.tag
           value: latest
   destination:
