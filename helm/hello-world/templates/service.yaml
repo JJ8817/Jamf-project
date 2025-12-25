@@ -1,15 +1,15 @@
 apiVersion: v1
 kind: Service
-metadata:
+meta
   name: {{ include "hello-world.fullname" . }}
   labels:
-    app: {{ include "hello-world.name" . }}
+    {{- include "hello-world.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.service.type }}
-  selector:
-    app: {{ include "hello-world.name" . }}
+  type: ClusterIP
   ports:
-    - port: {{ .Values.service.port }}
-      targetPort: {{ .Values.service.targetPort }}
+    - port: 80
+      targetPort: 5001
       protocol: TCP
       name: http
+  selector:
+    {{- include "hello-world.selectorLabels" . | nindent 4 }}
