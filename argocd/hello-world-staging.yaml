@@ -15,7 +15,7 @@ spec:
         - values-staging.yaml
       parameters:
         - name: image.tag
-          value: 4f70ca1384920c80f417d685e06411f188b3084e
+          value: f3813793cac9e041432d4f31c3e931cfc793c9c5
         - name: image.repository
           value: ghcr.io/jj8817/hello-world-flask
   destination:
@@ -44,7 +44,7 @@ spec:
         - values-prod.yaml
       parameters:
         - name: image.tag
-          value: 4f70ca1384920c80f417d685e06411f188b3084e
+          value: f3813793cac9e041432d4f31c3e931cfc793c9c5
         - name: image.repository
           value: ghcr.io/jj8817/hello-world-flask
   destination:
